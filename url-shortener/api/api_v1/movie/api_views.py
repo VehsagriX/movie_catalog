@@ -21,10 +21,10 @@ def read_movies_list():
 def create_movie(
     movie: MovieCreate,
 ):
-    movie_id = random.randint(1, 100)
-    return Movie(movie_id=movie_id, **movie.model_dump())
+
+    return Movie(**movie.model_dump())
 
 
-@router.get("/{id}/", response_model=Movie)
+@router.get("/{slug}/", response_model=Movie)
 def read_movie_by_id(movie: Annotated[Movie, Depends(get_movie_by_id)]):
     return movie

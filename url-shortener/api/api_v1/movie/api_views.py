@@ -1,6 +1,6 @@
+import random
 from typing import Annotated
 from annotated_types import Len
-from annotated_types import MinLen
 from fastapi import APIRouter, Depends, status, Form
 from schemas import Movie
 
@@ -20,11 +20,13 @@ def read_movies_list():
 
 @router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
 def create_movie(
-    title: Annotated[str, Len(min_length=10, max_length=30), Form()],
+    title: Annotated[str, Len(min_length=4, max_length=30), Form()],
     description: Annotated[str, Form()],
     year: Annotated[int, Form()],
 ):
-    return MOVIES(
+    movie_id = random.randint(1, 100)
+    return Movie(
+        movie_id=movie_id,
         title=title,
         description=description,
         year=year,

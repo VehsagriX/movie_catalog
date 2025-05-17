@@ -14,7 +14,7 @@ class MovieCreate(BaseModel):
     """Модель создания фильма"""
 
     slug: Annotated[str, MinLen(3), MaxLen(10)]
-    title: Annotated[str, Len(min_length=4, max_length=30)]
+    title: Annotated[str, Len(min_length=4, max_length=100)]
     description: str
     year: int
 

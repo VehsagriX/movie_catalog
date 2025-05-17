@@ -1,10 +1,10 @@
 from fastapi import HTTPException, status
 
-from .crud import MOVIES
+from .crud import movie_storage
 
 
 def get_movie_by_id(slug: str):
-    movie = next((movie for movie in MOVIES if movie.slug == slug.lower()), None)
+    movie = movie_storage.find(slug=slug)
     if movie:
         return movie
 

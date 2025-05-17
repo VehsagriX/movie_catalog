@@ -27,3 +27,23 @@ def create_movie(
 @router.get("/{slug}/", response_model=Movie)
 def read_movie_by_id(movie: Annotated[Movie, Depends(get_movie_by_id)]):
     return movie
+
+
+@router.delete(
+    "/{slug}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Movie not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Movie 'slug' not found",
+                    },
+                },
+            },
+        },
+    },
+)
+def delete_movie(movie: Annotated[Movie, Depends(get_movie_by_id)]) -> None:
+    movie_storage.delete(movie)

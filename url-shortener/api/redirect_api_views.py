@@ -22,4 +22,4 @@ def redirect__short_url(
     ],
 ) -> RedirectResponse:
 
-    return RedirectResponse(url=url.target_url)
+    return RedirectResponse(url=str(url.target_url))

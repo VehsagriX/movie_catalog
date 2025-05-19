@@ -5,7 +5,7 @@ from pydantic import BaseModel, AnyHttpUrl
 
 class ShortUrlBase(BaseModel):
     target_url: AnyHttpUrl  # целевая ссылка
-    slug: str  # это -,_, цифры и буквы латинские
+    description: Annotated[str, MaxLen(200)] = ""
 
 
 class ShortUrlCreate(ShortUrlBase):
@@ -16,7 +16,13 @@ class ShortUrlCreate(ShortUrlBase):
     slug: Annotated[str, MinLen(3), MaxLen(10)]
 
 
+class ShortUrlUpdate(ShortUrlBase):
+    """Модель для обновления информации о сокращенной ссылки"""
+    description: Annotated[str, MaxLen(200)]
+
 class ShortUrl(ShortUrlBase):
     """
     Модель сокращенной ссылки
     """
+
+    slug: str  # это -,_, цифры и буквы латинские

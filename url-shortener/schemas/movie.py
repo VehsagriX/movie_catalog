@@ -4,9 +4,9 @@ from pydantic import BaseModel
 
 
 class MovieBase(BaseModel):
-    slug: str
+
     title: str
-    description: str
+    description: str = ""
     year: int
 
 
@@ -19,9 +19,13 @@ class MovieCreate(BaseModel):
     year: int
 
 
+class MovieUpdate(MovieBase):
+    pass
+
+
 class Movie(MovieBase):
     """
     Модель фильма
     """
 
-    pass
+    slug: str

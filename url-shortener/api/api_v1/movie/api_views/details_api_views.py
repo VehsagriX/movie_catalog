@@ -3,9 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 
 from api.api_v1.movie.crud import movie_storage
-from api.api_v1.movie.dependencies import get_movie_by_id
-from schemas import Movie
-
+from api.api_v1.movie.dependencies import get_movie_by_slug
+from schemas import Movie, MovieUpdate
 
 router = APIRouter(
     prefix="/{slug}",
@@ -23,9 +22,11 @@ router = APIRouter(
     },
 )
 
+MovieBySlug = Annotated[Movie, Depends(get_movie_by_slug)]
+
 
 @router.get("/", response_model=Movie)
-def read_movie_by_id(movie: Annotated[Movie, Depends(get_movie_by_id)]):
+def read_movie_by_id(movie: MovieBySlug):
     return movie
 
 
@@ -33,5 +34,13 @@ def read_movie_by_id(movie: Annotated[Movie, Depends(get_movie_by_id)]):
     "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_movie(movie: Annotated[Movie, Depends(get_movie_by_id)]) -> None:
+def delete_movie(movie: MovieBySlug) -> None:
     movie_storage.delete(movie)
+
+
+@router.put("/", response_model=Movie)
+def update_movie(
+    movie: MovieBySlug,
+    movie_update: MovieUpdate,
+):
+    return movie_storage.update(movie=movie, update_movie=movie_update)

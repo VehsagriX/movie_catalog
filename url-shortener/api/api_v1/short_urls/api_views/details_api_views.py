@@ -5,7 +5,7 @@ from starlette import status
 
 from api.api_v1.short_urls.crud import storage
 from api.api_v1.short_urls.dependencies import prefetch_short_urls
-from schemas import ShortUrl, ShortUrlUpdate
+from schemas import ShortUrl, ShortUrlUpdate, ShortUrlPartialUpdate
 
 router = APIRouter(
     prefix="/{slug}",
@@ -53,3 +53,11 @@ def update_short_url_detail(
 ) -> ShortUrl:
 
     return storage.update(short_url=url, short_url_in=short_url_in)
+
+
+@router.patch("/", response_model=ShortUrl)
+def partial_update_short_url_detail(
+    url: ShortUrlBySlug,
+    short_url_in: ShortUrlPartialUpdate,
+):
+    return storage.update_partial(short_url=url, short_url_in=short_url_in)

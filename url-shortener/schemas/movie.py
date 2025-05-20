@@ -36,9 +36,16 @@ class MoviePartialUpdate(MovieBase):
     year: int | None = None
 
 
+class MovieRead(MovieBase):
+    """Модель чтения фильмов"""
+
+    slug: str
+
+
 class Movie(MovieBase):
     """
     Модель фильма
     """
 
     slug: str
+    notes: str = "Best"

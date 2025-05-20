@@ -32,9 +32,16 @@ class ShortUrlPartialUpdate(ShortUrlBase):
     description: DescriptionDetails | None = None
 
 
+class ShortUrlRead(ShortUrlBase):
+    """Модель для чтения данных по сокращенной ссылке"""
+
+    slug: str
+
+
 class ShortUrl(ShortUrlBase):
     """
     Модель сокращенной ссылки
     """
 
     slug: str  # это -,_, цифры и буквы латинские
+    visits: int = 42

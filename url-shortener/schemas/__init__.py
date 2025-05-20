@@ -1,6 +1,7 @@
 __all__ = (
     "ShortUrl",
     "ShortUrlCreate",
+    "ShortUrlRead",
     "ShortUrlUpdate",
     "ShortUrlPartialUpdate",
     "Movie",
@@ -9,5 +10,11 @@ __all__ = (
     "MoviePartialUpdate",
 )
 
-from .short_url import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate
+from .short_url import (
+    ShortUrl,
+    ShortUrlCreate,
+    ShortUrlUpdate,
+    ShortUrlPartialUpdate,
+    ShortUrlRead,
+)
 from .movie import Movie, MovieCreate, MovieUpdate, MoviePartialUpdate

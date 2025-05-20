@@ -1,10 +1,19 @@
-from pydantic import BaseModel
-
+from pydantic import BaseModel, ValidationError
+from core.config import MOVIE_STORAGE_FILE
 from schemas import Movie, MovieCreate, MovieUpdate, MoviePartialUpdate
 
 
 class Storage(BaseModel):
     movies_storage: dict[str, Movie] = {}
+
+    def save_state(self):
+        return MOVIE_STORAGE_FILE.write_text(self.model_dump_json(indent=2))
+
+    @classmethod
+    def from_state(cls):
+        if not MOVIE_STORAGE_FILE.exists():
+            return Storage()
+        return Storage.model_validate_json(MOVIE_STORAGE_FILE.read_text())
 
     def get_all_movies(self) -> list[Movie]:
         return list(self.movies_storage.values())
@@ -15,10 +24,12 @@ class Storage(BaseModel):
     def create_movie(self, movie_create: MovieCreate) -> Movie:
         movie = Movie(**movie_create.model_dump())
         self.movies_storage[movie.slug] = movie
+        self.save_state()
         return movie
 
     def delete_by_slug(self, slug: str) -> None:
         self.movies_storage.pop(slug, None)
+        self.save_state()
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
@@ -26,44 +37,19 @@ class Storage(BaseModel):
     def update(self, movie: Movie, update_movie: MovieUpdate) -> Movie:
         for key_name, value in update_movie:
             setattr(movie, key_name, value)
+        self.save_state()
         return movie
 
     def partial_update(self, movie: Movie, update_movie: MoviePartialUpdate) -> Movie:
         for field, value in update_movie.model_dump(exclude_unset=True).items():
             setattr(movie, field, value)
+
+        self.save_state()
         return movie
 
 
-movie_storage = Storage()
-
-movie_storage.create_movie(
-    MovieCreate(
-        slug="last",
-        title="Last of Us",
-        description="Last of Us is best movies in last years",
-        year=2022,
-    )
-)
-
-movie_storage.create_movie(
-    MovieCreate(
-        slug="sniper",
-        title="American Sniper",
-        description="After serving in Iraq for years,"
-        "Chris Kyle, a lethal US sniper, returns home to his wife and son."
-        "However, he cannot cope with the traumatic experiences of war,"
-        "affecting his life and relationships.",
-        year=2014,
-    )
-)
-
-movie_storage.create_movie(
-    MovieCreate(
-        slug="harry",
-        title="Harry Potter and the Prisoner of Azkaban",
-        description="Harry Potter's third year at Hogwarts turns out to be eventful as he gets"
-        "tutored by Professor Lupin, a Defence Against the Dark Arts teacher,"
-        "and tackles Sirius Black, a vengeful fugitive prisoner.",
-        year=2005,
-    )
-)
+try:
+    movie_storage = Storage.from_state()
+except ValidationError:
+    movie_storage = Storage()
+    movie_storage.save_state()

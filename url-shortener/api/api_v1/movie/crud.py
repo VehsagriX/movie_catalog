@@ -21,6 +21,26 @@ class Storage(BaseModel):
             return Storage()
         return Storage.model_validate_json(MOVIE_STORAGE_FILE.read_text())
 
+    def init_movie_storage_from_state(self) -> None:
+        try:
+            data = Storage.from_state()
+            logger.warning(
+                "Состояние успешно прочитано с диска: %s", MOVIE_STORAGE_FILE
+            )
+        except ValidationError:
+            self.save_state()
+            logger.warning(
+                "Ошибка чтения файла: %s. Файл %s будет перезаписан",
+                MOVIE_STORAGE_FILE,
+                MOVIE_STORAGE_FILE,
+            )
+            return
+        # мы обновляем свойство напрямую
+        # если будут новые свойства,
+        # то их тоже надо обновить.
+        self.movies_storage.update(data.movies_storage)
+        logger.warning("Recovered data from storage file")
+
     def get_all_movies(self) -> list[Movie]:
         return list(self.movies_storage.values())
 
@@ -55,14 +75,4 @@ class Storage(BaseModel):
         return movie
 
 
-try:
-    movie_storage = Storage.from_state()
-    logger.warning("Состояние успешно прочитано с диска: %s", MOVIE_STORAGE_FILE)
-except ValidationError:
-    movie_storage = Storage()
-    movie_storage.save_state()
-    logger.warning(
-        "Ошибка чтения файла: %s. Файл %s будет перезаписан",
-        MOVIE_STORAGE_FILE,
-        MOVIE_STORAGE_FILE,
-    )
+movie_storage = Storage()

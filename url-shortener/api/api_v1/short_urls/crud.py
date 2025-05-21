@@ -1,17 +1,25 @@
+import logging
+
 from pydantic import BaseModel, ValidationError
 from core.config import SHORT_URL_STORAGE_FILE
 from schemas import ShortUrl, ShortUrlCreate, ShortUrlUpdate, ShortUrlPartialUpdate
+
+
+logger = logging.getLogger(__name__)
 
 
 class ShortUrlsStorage(BaseModel):
     slug_to_short_url: dict[str, ShortUrl] = {}
 
     def save_state(self) -> None:
-        return SHORT_URL_STORAGE_FILE.write_text(self.model_dump_json(indent=2))
+        SHORT_URL_STORAGE_FILE.write_text(self.model_dump_json(indent=2))
+        logger.info("Saved short url storage file")
 
     @classmethod
     def from_state(cls) -> "ShortUrlsStorage":
         if not SHORT_URL_STORAGE_FILE.exists():
+            logger.info("Short url storage file dosen't exist")
+
             return ShortUrlsStorage()
         return cls.model_validate_json(SHORT_URL_STORAGE_FILE.read_text())
 
@@ -70,7 +78,8 @@ class ShortUrlsStorage(BaseModel):
 
 try:
     storage = ShortUrlsStorage.from_state()
-
+    logger.warning("Recovered data from storage file")
 except ValidationError:
     storage = ShortUrlsStorage()
     storage.save_state()
+    logger.warning("Rewritten storage file due to validation error.")

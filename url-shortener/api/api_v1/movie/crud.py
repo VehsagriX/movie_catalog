@@ -1,13 +1,19 @@
+import logging
+
 from pydantic import BaseModel, ValidationError
 from core.config import MOVIE_STORAGE_FILE
 from schemas import Movie, MovieCreate, MovieUpdate, MoviePartialUpdate
+
+
+logger = logging.getLogger(__name__)
 
 
 class Storage(BaseModel):
     movies_storage: dict[str, Movie] = {}
 
     def save_state(self):
-        return MOVIE_STORAGE_FILE.write_text(self.model_dump_json(indent=2))
+        MOVIE_STORAGE_FILE.write_text(self.model_dump_json(indent=2))
+        logger.info("Успешно сохранена история файла.")
 
     @classmethod
     def from_state(cls):
@@ -25,6 +31,7 @@ class Storage(BaseModel):
         movie = Movie(**movie_create.model_dump())
         self.movies_storage[movie.slug] = movie
         self.save_state()
+        logger.info("Фильм успешно %s создан.", movie.title)
         return movie
 
     def delete_by_slug(self, slug: str) -> None:
@@ -50,6 +57,12 @@ class Storage(BaseModel):
 
 try:
     movie_storage = Storage.from_state()
+    logger.warning("Состояние успешно прочитано с диска: %s", MOVIE_STORAGE_FILE)
 except ValidationError:
     movie_storage = Storage()
     movie_storage.save_state()
+    logger.warning(
+        "Ошибка чтения файла: %s. Файл %s будет перезаписан",
+        MOVIE_STORAGE_FILE,
+        MOVIE_STORAGE_FILE,
+    )

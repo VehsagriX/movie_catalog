@@ -1,8 +1,15 @@
-from fastapi import Request, FastAPI
+import logging
 
+from fastapi import Request, FastAPI
+from core import config
 from api import router as api_router
 from api.redirect_api_views import router as redirect_api_router
 
+
+logging.basicConfig(
+    level=config.LOG_LEVEL,
+    format=config.LOG_FORMAT,
+)
 
 app = FastAPI()
 app.include_router(redirect_api_router)

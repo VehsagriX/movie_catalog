@@ -24,9 +24,7 @@ class Storage(BaseModel):
     def init_movie_storage_from_state(self) -> None:
         try:
             data = Storage.from_state()
-            logger.warning(
-                "Состояние успешно прочитано с диска: %s", MOVIE_STORAGE_FILE
-            )
+
         except ValidationError:
             self.save_state()
             logger.warning(
@@ -39,7 +37,7 @@ class Storage(BaseModel):
         # если будут новые свойства,
         # то их тоже надо обновить.
         self.movies_storage.update(data.movies_storage)
-        logger.warning("Recovered data from storage file")
+        logger.warning("Состояние успешно прочитано с диска: %s", MOVIE_STORAGE_FILE)
 
     def get_all_movies(self) -> list[Movie]:
         return list(self.movies_storage.values())

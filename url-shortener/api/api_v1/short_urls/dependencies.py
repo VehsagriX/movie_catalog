@@ -1,8 +1,12 @@
-from fastapi import HTTPException, status
+import logging
+
+from fastapi import HTTPException, status, BackgroundTasks
 
 from schemas import ShortUrl
 
 from .crud import storage
+
+logger = logging.getLogger(__name__)
 
 
 def prefetch_short_urls(slug: str) -> ShortUrl:
@@ -14,3 +18,13 @@ def prefetch_short_urls(slug: str) -> ShortUrl:
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"URL {slug!r} Not found",
     )
+
+
+def save_storage_state(
+    background_tasks: BackgroundTasks,
+):
+    # сначала код до входа внутрь view функции
+    yield
+    # код после покидания view функции
+    logger.info("Add background tasks to save storage")
+    background_tasks.add_task(storage.save_state)

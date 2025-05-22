@@ -12,3 +12,13 @@ LOG_FORMAT = (
     "[%(asctime)-2s] File: %(name)-12s %(levelname)-8s:  %(funcName)s - %(message)s"
 )
 LOG_LEVEL = logging.INFO
+
+
+UNSAFE_METHODS = frozenset(
+    {
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+    }
+)

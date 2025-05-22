@@ -1,8 +1,8 @@
 import logging
 
-from fastapi import HTTPException, status, BackgroundTasks
+from fastapi import HTTPException, status, BackgroundTasks, Request
 
-
+from core.config import UNSAFE_METHODS
 from schemas import Movie
 from .crud import movie_storage
 
@@ -20,8 +20,12 @@ def get_movie_by_slug(slug: str) -> Movie:
     )
 
 
-def depends_save_movie_storage(background_task: BackgroundTasks):
+def depends_save_movie_storage(
+    request: Request,
+    background_task: BackgroundTasks,
+):
 
     yield
-    logger.info("Задали сохраннение данных на диск")
-    background_task.add_task(movie_storage.save_state)
+    if request.method in UNSAFE_METHODS:
+        logger.info("Задали сохраннение данных на диск")
+        background_task.add_task(movie_storage.save_state)

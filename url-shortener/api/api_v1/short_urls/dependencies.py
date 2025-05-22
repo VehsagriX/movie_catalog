@@ -2,20 +2,12 @@ import logging
 
 from fastapi import HTTPException, status, BackgroundTasks, Request
 
+from core.config import UNSAFE_METHODS
 from schemas import ShortUrl
 
 from .crud import storage
 
 logger = logging.getLogger(__name__)
-
-UNSAFE_METHODS = frozenset(
-    {
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-    }
-)
 
 
 def prefetch_short_urls(slug: str) -> ShortUrl:

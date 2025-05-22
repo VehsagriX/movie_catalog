@@ -12,6 +12,7 @@ class Storage(BaseModel):
     movies_storage: dict[str, Movie] = {}
 
     def save_state(self):
+
         MOVIE_STORAGE_FILE.write_text(self.model_dump_json(indent=2))
         logger.info("Успешно сохранена история файла.")
 
@@ -48,6 +49,7 @@ class Storage(BaseModel):
     def create_movie(self, movie_create: MovieCreate) -> Movie:
         movie = Movie(**movie_create.model_dump())
         self.movies_storage[movie.slug] = movie
+
         self.save_state()
         logger.info("Фильм успешно %s создан.", movie.title)
         return movie

@@ -50,13 +50,11 @@ class Storage(BaseModel):
         movie = Movie(**movie_create.model_dump())
         self.movies_storage[movie.slug] = movie
 
-        self.save_state()
         logger.info("Фильм успешно %s создан.", movie.title)
         return movie
 
     def delete_by_slug(self, slug: str) -> None:
         self.movies_storage.pop(slug, None)
-        self.save_state()
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
@@ -64,14 +62,12 @@ class Storage(BaseModel):
     def update(self, movie: Movie, update_movie: MovieUpdate) -> Movie:
         for key_name, value in update_movie:
             setattr(movie, key_name, value)
-        self.save_state()
         return movie
 
     def partial_update(self, movie: Movie, update_movie: MoviePartialUpdate) -> Movie:
         for field, value in update_movie.model_dump(exclude_unset=True).items():
             setattr(movie, field, value)
 
-        self.save_state()
         return movie
 
 

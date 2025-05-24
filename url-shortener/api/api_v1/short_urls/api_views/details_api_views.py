@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from api.api_v1.global_depensities import api_token_required
 from api.api_v1.short_urls.crud import storage
 from api.api_v1.short_urls.dependencies import prefetch_short_urls
 from schemas import ShortUrl, ShortUrlUpdate, ShortUrlPartialUpdate, ShortUrlRead
@@ -41,7 +40,6 @@ def read_short_url_detail(
 def update_short_url_detail(
     url: ShortUrlBySlug,
     short_url_in: ShortUrlUpdate,
-    _=Depends(api_token_required),
 ) -> ShortUrl:
     return storage.update(short_url=url, short_url_in=short_url_in)
 
@@ -50,7 +48,6 @@ def update_short_url_detail(
 def partial_update_short_url_detail(
     url: ShortUrlBySlug,
     short_url_in: ShortUrlPartialUpdate,
-    _=Depends(api_token_required),
 ):
     return storage.update_partial(short_url=url, short_url_in=short_url_in)
 
@@ -61,6 +58,5 @@ def partial_update_short_url_detail(
 )
 def delete_short_url(
     url: ShortUrlBySlug,
-    _=Depends(api_token_required),
 ) -> None:
     storage.delete(short_url=url)

@@ -8,7 +8,19 @@ from api.api_v1.short_urls.crud import storage
 router = APIRouter(
     prefix="/short-url",
     tags=["Short URLs"],
-    dependencies=[Depends(save_storage_state)],
+    dependencies=[Depends(save_storage_state), Depends(api_token_required)],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Only for unsafe methods",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token",
+                    },
+                }
+            },
+        },
+    },
 )
 
 
@@ -24,7 +36,6 @@ def read_short_urls_list():
 )
 def create_short_url(
     short_url_create: ShortUrlCreate,
-    _=Depends(api_token_required),  # если переменная зависимости не нужна!
 ) -> ShortUrl:
 
     return storage.create(short_url_create)

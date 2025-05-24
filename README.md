@@ -18,3 +18,9 @@ Run dev server:
 
 fastapi dev
 ```
+
+## Snipets
+```shell
+
+python -c "import secrets; print(secrets.token_urlsafe(16))"
+```

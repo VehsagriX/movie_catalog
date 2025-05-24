@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 
+from api.api_v1.global_depensities import api_token_required
 from api.api_v1.movie.crud import movie_storage
 from api.api_v1.movie.dependencies import get_movie_by_slug
 from schemas import Movie, MovieUpdate, MoviePartialUpdate, MovieRead
@@ -30,20 +31,11 @@ def read_movie_by_id(movie: MovieBySlug):
     return movie
 
 
-@router.delete(
-    "/",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-def delete_movie(
-    movie: MovieBySlug,
-) -> None:
-    movie_storage.delete(movie)
-
-
 @router.put("/", response_model=MovieRead)
 def update_movie(
     movie: MovieBySlug,
     movie_update: MovieUpdate,
+    _=Depends(api_token_required),
 ):
     return movie_storage.update(movie=movie, update_movie=movie_update)
 
@@ -52,5 +44,17 @@ def update_movie(
 def partial_update_movie(
     movie: MovieBySlug,
     movie_update: MoviePartialUpdate,
+    _=Depends(api_token_required),
 ):
     return movie_storage.partial_update(movie=movie, update_movie=movie_update)
+
+
+@router.delete(
+    "/",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_movie(
+    movie: MovieBySlug,
+    _=Depends(api_token_required),
+) -> None:
+    movie_storage.delete(movie)

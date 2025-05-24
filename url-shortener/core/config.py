@@ -22,3 +22,10 @@ UNSAFE_METHODS = frozenset(
         "DELETE",
     }
 )
+
+API_TOKENS: frozenset[str] = frozenset(
+    {
+        "IexqJ9E4DNswYEv1GMtkMg",
+        "2d6Y1bfx3lUj4cRWwjBDHOSgbXk",
+    }
+)

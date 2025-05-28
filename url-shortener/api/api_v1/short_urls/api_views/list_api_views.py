@@ -1,21 +1,25 @@
 from fastapi import APIRouter, status, Depends
 
 from api.api_v1.short_urls.dependencies import save_storage_state
-from api.api_v1.global_depensities import api_token_required
+from api.api_v1.global_depensities import user_basic_auth_required, api_token_required
 from schemas import ShortUrl, ShortUrlCreate, ShortUrlRead
 from api.api_v1.short_urls.crud import storage
 
 router = APIRouter(
     prefix="/short-url",
     tags=["Short URLs"],
-    dependencies=[Depends(save_storage_state), Depends(api_token_required)],
+    dependencies=[
+        Depends(save_storage_state),
+        Depends(user_basic_auth_required),
+        # Depends(api_token_required),
+    ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Only for unsafe methods",
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Invalid API token",
+                        "detail": "Invalid credentials.",
                     },
                 }
             },

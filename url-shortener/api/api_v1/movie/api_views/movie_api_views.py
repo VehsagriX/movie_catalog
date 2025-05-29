@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends
 
-from api.api_v1.global_depensities import user_basic_auth_required, api_token_required
+
 from schemas import Movie, MovieCreate, MovieRead
 
 from api.api_v1.movie.crud import movie_storage
@@ -11,14 +11,16 @@ router = APIRouter(
     tags=["Movies"],
     dependencies=[
         Depends(depends_save_movie_storage),
-        Depends(user_basic_auth_required),
-        # Depends(api_token_required),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
             "description": "Only for unsafe methods",
             "content": {
-                "application/json": {"example": {"detail": "Invalid API token"}}
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token or basic auth credentials"
+                    },
+                }
             },
         },
     },
